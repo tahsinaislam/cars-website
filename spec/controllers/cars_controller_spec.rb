@@ -8,6 +8,8 @@ describe CarsController do
       post :create, params: { car: { make: 'Subaru', model: 'Outback', year: '2018' } }
       cars_after = Car.count
 
+      # could have asserted that we called Car#save
+
       # expect that there is 1 more car in the db than before
       expect(cars_after).to eq(cars_before + 1)
 
@@ -17,9 +19,18 @@ describe CarsController do
       expect(last_car.model).to eq('Outback')
     end
 
-    it 'does not save if given a year in the future' do
+    it 'saves a car for the NEXT model year' do
       cars_before = Car.count
       post :create, params: { car: { make: 'Subaru', model: 'Outback', year: '2023' } }
+      cars_after = Car.count
+
+      # expect that there is 1 more car in the db than before
+      expect(cars_after).to eq(cars_before + 1)
+    end
+
+    it 'does not save if given a year more than one year in the future' do
+      cars_before = Car.count
+      post :create, params: { car: { make: 'Subaru', model: 'Outback', year: '2024' } }
       cars_after = Car.count
 
       # expect that the number of cars does not change
